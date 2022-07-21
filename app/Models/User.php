@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'photo',
     ];
 
     /**
@@ -42,4 +43,20 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    function getPhotoUrlAttribute()
+    {
+        if (strpos($this->photo, 'http://') !== false || strpos($this->photo, 'https://') !== false) {
+            return $this->photo;
+        } else {
+            return asset(base_path($this->photo));
+        }
+    }
+
+    function toArray()
+    {
+        $array = parent::toArray();
+        $array['photo_url'] = $this->photo_url;
+        return $array;
+    }
 }

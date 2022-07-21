@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\CkeditorController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -28,4 +29,8 @@ Route::group(['prefix' => 'auth',], function () {
         Route::get('/{provider}', [AuthController::class, 'redirectToProvider']);
         Route::get('/{provider}/callback', [AuthController::class, 'handleProviderCallback']);
     });
+});
+
+Route::group(['middleware' => 'auth:sanctum'], function () {
+    Route::post('ckeditor/upload', [CkeditorController::class, 'upload']);
 });

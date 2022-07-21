@@ -34,6 +34,11 @@ class AuthController extends Controller
                 'password' => Hash::make($providerUser->id),
             ]
         );
+        
+        if($user->photo == null) {
+            $user->photo = $providerUser->avatar;
+            $user->save();
+        }
 
         $token = $user->createToken('auth_token')->plainTextToken;
         return redirect(Constants::getLoginRedirectUrl() . '?token=' . $token);
