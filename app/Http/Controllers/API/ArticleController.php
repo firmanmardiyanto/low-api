@@ -17,6 +17,7 @@ class ArticleController extends Controller
 
     public function index()
     {
+
         $publishedArticles = Article::withUser()->where('published', true)->get();
         return response()->json([
             'status' => 'success',
