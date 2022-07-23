@@ -18,7 +18,7 @@ class Article extends Model
 
     public function categories()
     {
-        return $this->belongsToMany(Category::class, 'article_categories');
+        return $this->belongsToMany(Category::class, 'article_categories', 'article_id', 'category_id');
     }
 
     public function bookmarkers()

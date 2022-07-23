@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Article;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -40,6 +41,8 @@ class ArticleController extends Controller
             'description' => 'required|string|max:255',
             'published' => 'required|boolean',
             'tags' => 'required|string|max:255',
+            'category_ids' => 'required|array',
+            'category_ids.*' => 'required|exists:categories,id',
         ]);
 
         if ($validator->fails()) {
@@ -57,8 +60,8 @@ class ArticleController extends Controller
         $article->published = $request->published;
         $article->tags = $request->tags;
         $article->user_id = auth()->user()->id;
-        $article->categories()->sync($request->categories);
         $article->save();
+        $article->categories()->sync($request->category_ids);
         return response()->json([
             'status' => 'success',
             'article' => $article,
@@ -72,8 +75,8 @@ class ArticleController extends Controller
             'slug' => 'required|string|max:255|unique:articles,slug,' . $id,
             'description' => 'required|string|max:255',
             'published' => 'required|boolean',
-            'article_id' => 'nullable|integer',
             'tags' => 'required|string|max:255',
+            'category_ids.*' => 'required|exists:categories,id',
         ]);
 
         if ($validator->fails()) {
@@ -97,7 +100,7 @@ class ArticleController extends Controller
         $article->content = $request->content;
         $article->published = $request->published;
         $article->tags = $request->tags;
-        $article->categories()->sync($request->categories);
+        $article->categories()->sync($request->category_ids);
         $article->save();
         return response()->json([
             'status' => 'success',
