@@ -28,6 +28,13 @@ class CategoryController extends Controller
     public function show($id)
     {
         $category = Category::find($id);
+        if (!$category) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Category not found',
+            ], 404);
+        }
+
         return response()->json([
             'status' => 'success',
             'category' => $category,
@@ -37,7 +44,7 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:categories',
         ]);
 
         if ($validator->fails()) {
@@ -52,13 +59,14 @@ class CategoryController extends Controller
         $category->save();
         return response()->json([
             'status' => 'success',
+            'category' => $category,
         ]);
     }
 
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:categories,name,' . $id,
         ]);
 
         if ($validator->fails()) {
@@ -68,11 +76,20 @@ class CategoryController extends Controller
             ]);
         }
 
-        $category = \App\Models\Category::find($id);
+        $category = Category::find($id);
+
+        if (!$category) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Category not found',
+            ], 404);
+        }
+
         $category->name = $request->name;
         $category->save();
         return response()->json([
             'status' => 'success',
+            'category' => $category,
         ]);
     }
 

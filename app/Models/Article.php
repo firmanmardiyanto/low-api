@@ -13,7 +13,7 @@ class Article extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function categories()
@@ -24,5 +24,10 @@ class Article extends Model
     public function bookmarkers()
     {
         return $this->belongsToMany(User::class, 'bookmarks');
+    }
+
+    public function scopewithUser($query)
+    {
+        return $query->with('user');
     }
 }

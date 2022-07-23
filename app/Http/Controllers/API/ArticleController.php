@@ -11,12 +11,12 @@ class ArticleController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:sanctum')->only(['store', 'update', 'destroy']);
+        $this->middleware('auth:sanctum')->only(['store', 'update', 'destroy', 'me']);
     }
 
     public function index()
     {
-        $publishedArticles = Article::where('published', 1)->get();
+        $publishedArticles = Article::withUser()->where('published', true)->get();
         return response()->json([
             'status' => 'success',
             'articles' => $publishedArticles,
@@ -25,7 +25,7 @@ class ArticleController extends Controller
 
     public function show($id)
     {
-        $article = Article::find($id);
+        $article = Article::withUser()->find($id);
         return response()->json([
             'status' => 'success',
             'article' => $article,
@@ -38,10 +38,8 @@ class ArticleController extends Controller
             'title' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:articles',
             'description' => 'required|string|max:255',
-            'picture' => 'required|string|max:255',
             'published' => 'required|boolean',
-            'views' => 'required|integer',
-            'article_id' => 'nullable|integer',
+            'tags' => 'required|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -73,10 +71,9 @@ class ArticleController extends Controller
             'title' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:articles,slug,' . $id,
             'description' => 'required|string|max:255',
-            'picture' => 'required|string|max:255',
             'published' => 'required|boolean',
-            'views' => 'required|integer',
             'article_id' => 'nullable|integer',
+            'tags' => 'required|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -169,6 +166,15 @@ class ArticleController extends Controller
     public function searchByDate(Request $request)
     {
         $articles = Article::where('created_at', 'like', '%' . $request->search . '%')->where('published', 1)->get();
+        return response()->json([
+            'status' => 'success',
+            'articles' => $articles,
+        ]);
+    }
+
+    public function me()
+    {
+        $articles = Article::where('user_id', auth()->user()->id)->get();
         return response()->json([
             'status' => 'success',
             'articles' => $articles,

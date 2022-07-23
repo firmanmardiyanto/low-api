@@ -18,7 +18,7 @@ class AdsController extends Controller
 
     public function index()
     {
-        $ads = Ads::where('published', 1)->get();
+        $ads = Ads::all();
         return response()->json([
             'status' => 'success',
             'ads' => $ads,
@@ -41,10 +41,8 @@ class AdsController extends Controller
             'title' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:ads',
             'description' => 'required|string|max:255',
-            'picture' => 'required|string|max:255',
+            'picture' => 'required|file|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'published' => 'required|boolean',
-            'views' => 'required|integer',
-            'ad_id' => 'nullable|integer',
         ]);
 
         if ($validator->fails()) {
@@ -60,9 +58,14 @@ class AdsController extends Controller
         $ad->description = $request->description;
         $ad->picture = $request->picture;
         $ad->published = $request->published;
-        $ad->views = $request->views;
         $ad->article_id = $request->article_id ?? null;
         $ad->user_id = auth()->user()->id;
+
+        $file = $request->file('picture');
+        $fileName = $file->getClientOriginalName();
+        $file->move(public_path('/images/ads'), $fileName);
+        $ad->picture = $fileName;
+
         $ad->save();
         return response()->json([
             'status' => 'success',
@@ -76,10 +79,8 @@ class AdsController extends Controller
             'title' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:ads,slug,' . $id,
             'description' => 'required|string|max:255',
-            'picture' => 'required|string|max:255',
+            'picture' => 'required|file|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'published' => 'required|boolean',
-            'views' => 'required|integer',
-            'article_id' => 'nullable|integer',
         ]);
 
         if ($validator->fails()) {
@@ -95,7 +96,6 @@ class AdsController extends Controller
         $ad->description = $request->description;
         $ad->picture = $request->picture;
         $ad->published = $request->published;
-        $ad->views = $request->views;
         $ad->article_id = $request->article_id ?? null;
         $ad->user_id = auth()->user()->id;
         $ad->save();

@@ -43,6 +43,7 @@ Route::group(['prefix' => 'articles'], function () {
     Route::put('/{id}', [ArticleController::class, 'update']);
     Route::delete('/{id}', [ArticleController::class, 'destroy']);
 });
+Route::get('/articles-me', [ArticleController::class, 'me']);
 
 Route::group(['prefix' => 'bookmarks'], function () {
     Route::post('/', [BookmarkController::class, 'store']);
