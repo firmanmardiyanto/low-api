@@ -175,9 +175,12 @@ class ArticleController extends Controller
         ]);
     }
 
-    public function me()
+    public function me(Request $request)
     {
         $articles = Article::where('user_id', auth()->user()->id)->get();
+        if ($request->has('published')) {
+            $articles = $articles->where('published', $request->published);
+        }
         return response()->json([
             'status' => 'success',
             'articles' => $articles,
