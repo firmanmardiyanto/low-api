@@ -53,6 +53,16 @@ class User extends Authenticatable
         }
     }
 
+    public function articles()
+    {
+        return $this->hasMany(Article::class);
+    }
+
+    public function bookmarks()
+    {
+        return $this->belongsToMany(Article::class, 'bookmarks');
+    }
+
     function toArray()
     {
         $array = parent::toArray();
